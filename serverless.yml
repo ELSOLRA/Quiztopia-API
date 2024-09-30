@@ -7,6 +7,21 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: eu-north-1
+  environment:
+    QUIZ_TABLE: ${self:service}
+    JWT_SECRET: quiz123
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUIZ_TABLE}
 
 functions:
   hello:
@@ -15,3 +30,6 @@ functions:
       - httpApi:
           path: /
           method: get
+
+resources:
+  - ${file(config/dynamoDb-tables.yml)}
