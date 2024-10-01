@@ -8,7 +8,9 @@ provider:
   runtime: nodejs20.x
   region: eu-north-1
   environment:
-    QUIZ_TABLE: ${self:service}
+    USERS_TABLE: ${self:service}-users
+    QUIZ_TABLE: ${self:service}-quizzes
+    LEADERBOARD_TABLE: ${self:service}-leaderboard
     JWT_SECRET: quiz123
   iam:
     role:
@@ -21,15 +23,24 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-          Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUIZ_TABLE}
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUIZ_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.LEADERBOARD_TABLE}
 
 functions:
-  hello:
-    handler: handler.hello
+  createUser:
+    handler: src/functions/Users/Signup/userSignup.handler
     events:
       - httpApi:
-          path: /
-          method: get
+          path: /users
+          method: post
+  loginUser:
+    handler: src/functions/Users/Login/userLogin.handler
+    events:
+      - httpApi:
+          path: /login
+          method: post
 
 resources:
   - ${file(config/dynamoDb-tables.yml)}

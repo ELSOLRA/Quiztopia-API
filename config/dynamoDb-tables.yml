@@ -1,16 +1,60 @@
 Resource:
-  QuiztopiaTable:
+  UsersTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: ${self:provider.environment.QUIZ_TABLE}
+      TableName: ${self:provider.environment.USERS_TABLE}
       AttributeDefinitions:
-        - AttributeName: PK
+        - AttributeName: userId
           AttributeType: S
-        - AttributeName: SK
+        - AttributeName: username
           AttributeType: S
       KeySchema:
-        - AttributeName: PK
+        - AttributeName: userId
           KeyType: HASH
-        - AttributeName: SK
+        - AttributeName: username
           KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: UsernameIndex
+          KeySchema:
+            - AttributeName: username
+              KeyType: HASH
+          Projection:
+          ProjectionType: ALL
       BillingMode: PAY_PER_REQUEST
+
+    QuizzesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.QUIZZES_TABLE}
+        AttributeDefinitions:
+          - AttributeName: quizId
+            AttributeType: S
+          - AttributeName: creatorUsername
+            AttributeType: S
+        KeySchema:
+          - AttributeName: quizId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: CreatorIndex
+            KeySchema:
+              - AttributeName: creatorUsername
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    LeaderboardTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.LEADERBOARD_TABLE}
+        AttributeDefinitions:
+          - AttributeName: quizId
+            AttributeType: S
+          - AttributeName: score
+            AttributeType: N
+        KeySchema:
+          - AttributeName: quizId
+            KeyType: HASH
+          - AttributeName: score
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST

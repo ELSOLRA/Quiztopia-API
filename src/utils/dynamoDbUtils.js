@@ -3,39 +3,45 @@ import {
   GetCommand,
   PutCommand,
   QueryCommand,
+  ScanCommand,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import dynamoDb from "../services/dynamoDb";
 
-const TableName = process.env.QUIZ_TABLE;
-
-export const putItem = async (item) => {
+export const putItem = async (tableName, item) => {
   const command = new PutCommand({
-    TableName,
+    TableName: tableName,
     Item: item,
   });
   return dynamoDb.send(command);
 };
 
-export const getItem = async (key) => {
+export const getItem = async (tableName, key) => {
   const command = new GetCommand({
-    TableName,
+    TableName: tableName,
     Key: key,
   });
   return dynamoDb.send(command);
 };
 
 export const query = async (params) => {
-  const command = new QueryCommand({
-    TableName,
-    ...params,
-  });
+  const command = new QueryCommand(params);
   return dynamoDb.send(command);
 };
 
-export const updateItem = async (key, updateExpression, attributeValues) => {
+export const scan = async (params) => {
+  const command = new ScanCommand(params);
+  return dynamoDb.send(command);
+};
+
+export const updateItem = async (
+  tableName,
+  key,
+  updateExpression,
+  attributeValues
+) => {
   const command = new UpdateCommand({
-    TableName,
+    TableName: tableName,
     Key: key,
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: attributeValues,
@@ -44,9 +50,9 @@ export const updateItem = async (key, updateExpression, attributeValues) => {
   return dynamoDb.send(command);
 };
 
-export const deleteItem = async (key) => {
+export const deleteItem = async (tableName, key) => {
   const command = new DeleteCommand({
-    TableName,
+    TableName: tableName,
     Key: key,
   });
   return dynamoDb.send(command);

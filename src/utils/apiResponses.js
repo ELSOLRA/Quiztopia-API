@@ -1,12 +1,12 @@
-export const sendResponse = (statusCode = 200, data) => ({
+export const sendResponse = (statusCode, data) => ({
   statusCode,
-  body: JSON.stringify({ success: true, data }),
+  body: JSON.stringify({ success: true, ...data }),
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-export const sendError = (statusCode = 400, message) => ({
+export const sendError = (statusCode, message) => ({
   statusCode,
   body: JSON.stringify({ success: false, error: message }),
   headers: {
