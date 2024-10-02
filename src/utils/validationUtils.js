@@ -15,6 +15,7 @@ export const quizNameSchema = vine.object({
 });
 
 export const addQuestionSchema = vine.object({
+  quizId: vine.string().required(),
   question: vine.string().minLength(5).maxLength(300),
   answer: vine.string().minLength(1).maxLength(100),
   location: vine.object({

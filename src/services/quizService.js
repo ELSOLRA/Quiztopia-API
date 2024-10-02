@@ -1,36 +1,72 @@
 import { v4 as uuid } from "uuid";
 import * as dynamoDbUtils from "../utils/dynamoDbUtils";
+import { getUserById } from "./userService";
 
 const quizTable = process.env.QUIZ_TABLE;
 
 export const createQuiz = async (userId, quizName) => {
-  const quizId = uuid();
-  const quiz = {
-    quizId,
-    userId,
-    quizName,
-    questions: [],
-    createdAt: new Date().toISOString(),
-  };
+  try {
+    const quizId = uuid();
 
-  await dynamoDbUtils.putItem(quizTable, quiz);
-  return quiz;
+    const user = await getUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const quiz = {
+      quizId,
+      userId,
+      quizName,
+      createdBy: {
+        userId,
+        username: user.username,
+      },
+      questions: [],
+      createdAt: new Date().toISOString(),
+    };
+
+    await dynamoDbUtils.putItem(quizTable, quiz);
+    return quiz;
+  } catch (error) {
+    console.error("Error creating quiz:", error);
+    throw new Error("Failed to create quiz");
+  }
 };
 
 export const getAllQuizzes = async () => {
   const params = { TableName: quizTable };
   const result = await dynamoDbUtils.scan(params);
+
+  /*   const quizzesWithUserName = await Promise.all(
+    result.Items.map(async (quiz) => {
+      try {
+        const user = await getUserById(quiz.userId);
+        return {
+          ...quiz,
+          createdBy: user ? user.username : "-",
+        };
+      } catch (error) {
+        console.error(`Error fetching quiz -${quiz.quizId}:`, error);
+        return {
+          ...quiz,
+          createdBy: "-",
+        };
+      }
+    })
+  );
+
+  return quizzesWithUserName; */
   return result.Items;
 };
 
-export const getQuizById = async (quizId, userId) => {
+export const getQuizById = async (quizId /* , userId */) => {
   const result = await dynamoDbUtils.getItem(quizTable, { quizId });
   if (!result.Item) {
     return null;
   }
-  if (result.Item.userId !== userId) {
+  /*   if (result.Item.userId !== userId) {
     return null;
-  }
+  } */
   return result.Item;
 };
 
@@ -50,17 +86,18 @@ export const getQuizzesByUserId = async (userId) => {
   return result.Items;
 };
 
-export const addQuestion = async (quizId, userId, questionWithAnswer) => {
+export const addQuestion = async (quizId, userId, questionData) => {
   const quiz = await getQuizById(quizId);
-  if (!quiz || quiz.userId !== userId) {
+  if (!quiz || quiz.createdBy.userId !== userId) {
     throw new Error(
       "Unauthorized to modify this quiz, you can only modify your own quiz"
     );
   }
 
-  const questionData = {
+  const newQuestion = {
     id: uuid(),
-    ...questionWithAnswer,
+    ...questionData,
+    createdAt: new Date().toISOString(),
   };
   // list_append (operand, operand) - evaluates to a list with a new element added to it.
   // if_not_exists (path, operand) - if the item does not contain an attribute at the specified path, then if_not_exists evaluates to operand; otherwise, it evaluates to path.
@@ -71,7 +108,7 @@ export const addQuestion = async (quizId, userId, questionWithAnswer) => {
   const updateExpression =
     "SET questions = list_append(if_not_exists(questions, :empty_list), :question)";
   const attributeValues = {
-    ":question": [questionData],
+    ":question": [newQuestion],
     ":empty_list": [],
   };
 
