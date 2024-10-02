@@ -54,6 +54,7 @@ export const deleteItem = async (tableName, key) => {
   const command = new DeleteCommand({
     TableName: tableName,
     Key: key,
+    ReturnValues: "ALL_OLD",
   });
   return dynamoDb.send(command);
 };

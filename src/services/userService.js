@@ -3,11 +3,11 @@ import { v4 as uuid } from "uuid";
 import * as dynamoDbUtils from "../utils/dynamoDbUtils";
 import { generateToken } from "../utils/jwt";
 
-const TableName = process.env.USERS_TABLE;
+const usersTable = process.env.USERS_TABLE;
 
 export const getUserByUsername = async (username) => {
   const params = {
-    TableName,
+    TableName: usersTable,
     IndexName: "UsernameIndex",
     KeyConditionExpression: "username = :username",
     ExpressionAttributeValues: {
@@ -17,6 +17,15 @@ export const getUserByUsername = async (username) => {
 
   const result = await dynamoDbUtils.query(params);
   return result.Items[0];
+};
+
+export const getUserById = async (userId) => {
+  const user = await dynamoDbUtils.getItem(usersTable, { userId });
+  if (!user.Item) {
+    return null;
+  }
+
+  return user.Item;
 };
 
 export const signupUser = async (username, password) => {
@@ -34,7 +43,7 @@ export const signupUser = async (username, password) => {
     password: hashedPassword,
   };
 
-  await dynamoDbUtils.putItem(TableName, user);
+  await dynamoDbUtils.putItem(usersTable, user);
   return user;
 };
 

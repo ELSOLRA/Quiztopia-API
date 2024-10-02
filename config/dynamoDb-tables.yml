@@ -25,19 +25,19 @@ Resource:
     QuizzesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.environment.QUIZZES_TABLE}
+        TableName: ${self:provider.environment.QUIZ_TABLE}
         AttributeDefinitions:
           - AttributeName: quizId
             AttributeType: S
-          - AttributeName: creatorUsername
+          - AttributeName: userId
             AttributeType: S
         KeySchema:
           - AttributeName: quizId
             KeyType: HASH
         GlobalSecondaryIndexes:
-          - IndexName: CreatorIndex
+          - IndexName: UserIdIndex
             KeySchema:
-              - AttributeName: creatorUsername
+              - AttributeName: userId
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
