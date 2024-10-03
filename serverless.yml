@@ -10,7 +10,7 @@ provider:
   environment:
     USERS_TABLE: ${self:service}-users
     QUIZ_TABLE: ${self:service}-quizzes
-    # LEADERBOARD_TABLE: ${self:service}-leaderboard
+    LEADERBOARD_TABLE: ${self:service}-leaderboard
     JWT_SECRET: quiz123
   iam:
     role:
@@ -26,9 +26,10 @@ provider:
           Resource:
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUIZ_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.LEADERBOARD_TABLE}
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}/index/*
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUIZ_TABLE}/index/*
-            # - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.LEADERBOARD_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.LEADERBOARD_TABLE}/index/*
 
 package:
   individually: true
@@ -87,6 +88,18 @@ functions:
       - httpApi:
           path: /quiz/{quizId}
           method: delete
+  updateLeaderboard:
+    handler: src/functions/Leaderboard/UpdateLeaderboard/updateLeaderboard.handler
+    events:
+      - httpApi:
+          path: /leaderboard
+          method: post
+  getTopScores:
+    handler: src/functions/Leaderboard/GetTopScores/getTopScores.handler
+    events:
+      - httpApi:
+          path: /leaderboard/{quizId}
+          method: get
 
 resources:
   - ${file(config/dynamoDb-tables.yml)}

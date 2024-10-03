@@ -58,3 +58,45 @@ Resources:
     #       - AttributeName: score
     #         KeyType: RANGE
     #     BillingMode: PAY_PER_REQUEST
+  # LeaderboardTable:
+  #   Type: AWS::DynamoDB::Table
+  #   Properties:
+  #     TableName: ${self:provider.environment.LEADERBOARD_TABLE}
+  #     AttributeDefinitions:
+  #       - AttributeName: quizId
+  #         AttributeType: S
+  #       - AttributeName: score
+  #         AttributeType: N
+  #     KeySchema:
+  #       - AttributeName: quizId
+  #         KeyType: HASH
+  #       - AttributeName: score
+  #         KeyType: RANGE
+  #     BillingMode: PAY_PER_REQUEST
+
+  LeaderboardTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:provider.environment.LEADERBOARD_TABLE}
+      AttributeDefinitions:
+        - AttributeName: quizId
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: score
+          AttributeType: N
+      KeySchema:
+        - AttributeName: quizId
+          KeyType: HASH
+        - AttributeName: userId
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: ScoreIndex
+          KeySchema:
+            - AttributeName: quizId
+              KeyType: HASH
+            - AttributeName: score
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST

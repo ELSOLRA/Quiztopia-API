@@ -25,6 +25,8 @@ export const addQuestionSchema = vine.object({
 });
 
 export const scoreSchema = vine.object({
+  quizId: vine.string(),
+  userId: vine.string(),
   score: vine.number().min(0),
 });
 
