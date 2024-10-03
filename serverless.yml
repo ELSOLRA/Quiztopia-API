@@ -10,7 +10,7 @@ provider:
   environment:
     USERS_TABLE: ${self:service}-users
     QUIZ_TABLE: ${self:service}-quizzes
-    LEADERBOARD_TABLE: ${self:service}-leaderboard
+    # LEADERBOARD_TABLE: ${self:service}-leaderboard
     JWT_SECRET: quiz123
   iam:
     role:
@@ -26,7 +26,17 @@ provider:
           Resource:
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUIZ_TABLE}
-            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.LEADERBOARD_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUIZ_TABLE}/index/*
+            # - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.LEADERBOARD_TABLE}
+
+package:
+  individually: true
+
+build:
+  esbuild:
+    bundle: true
+    minify: true
 
 functions:
   createUser:
@@ -41,6 +51,42 @@ functions:
       - httpApi:
           path: /login
           method: post
+  getAllQuizzes:
+    handler: src/functions/Quiz/GetAll/getAll.handler
+    events:
+      - httpApi:
+          path: /quiz
+          method: get
+  getAllQuizzesByUser:
+    handler: src/functions/Quiz/GetAllByUser/getAllByUserId.handler
+    events:
+      - httpApi:
+          path: /quiz/user/{userId}
+          method: get
+  getQuiz:
+    handler: src/functions/Quiz/GetOneQuiz/getOneQuiz.handler
+    events:
+      - httpApi:
+          path: /quiz/{quizId}
+          method: get
+  createQuiz:
+    handler: src/functions/Quiz/CreateQuiz/createQuiz.handler
+    events:
+      - httpApi:
+          path: /quiz
+          method: post
+  addQuestion:
+    handler: src/functions/Quiz/AddQuestion/addQuestion.handler
+    events:
+      - httpApi:
+          path: /quiz/question
+          method: post
+  deleteQuiz:
+    handler: src/functions/Quiz/Remove/removeQuiz.handler
+    events:
+      - httpApi:
+          path: /quiz/{quizId}
+          method: delete
 
 resources:
   - ${file(config/dynamoDb-tables.yml)}

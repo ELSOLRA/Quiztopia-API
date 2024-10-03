@@ -6,7 +6,7 @@ import { registerSchema } from "../../../utils/validationUtils";
 
 const register = async (event) => {
   try {
-    const { username, password } = JSON.parse(event.body);
+    const { username, password } = event.body;
     const user = await signupUser(username, password);
 
     return sendResponse(201, { userId: user.userId });
@@ -14,9 +14,9 @@ const register = async (event) => {
     if (error.message === "Username already exists") {
       return sendError(409, "Username already exists");
     }
-    if (error instanceof SyntaxError) {
+    /*     if (error instanceof SyntaxError) {
       return sendError(400, "Invalid JSON in request body");
-    }
+    } */
     return sendError(500, error.message);
   }
 };

@@ -6,7 +6,7 @@ import { loginSchema } from "../../../utils/validationUtils";
 
 const login = async (event) => {
   try {
-    const { username, password } = JSON.parse(event.body);
+    const { username, password } = event.body;
     const data = await loginUser(username, password);
     return sendResponse(200, { token: data.token, userId: data.user.userId });
   } catch (error) {

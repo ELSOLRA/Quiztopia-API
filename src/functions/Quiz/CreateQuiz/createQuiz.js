@@ -7,7 +7,7 @@ import { quizNameSchema } from "../../../utils/validationUtils";
 
 const create = async (event) => {
   try {
-    const { quizName } = JSON.parse(event.body);
+    const { quizName } = event.body;
     const userId = event.userId;
     if (!userId) {
       return sendError(401, "Unauthorized");

@@ -4,7 +4,7 @@ import { sendError, sendResponse } from "../../../utils/apiResponses";
 
 const getQuiz = async (event) => {
   try {
-    const { quizId } = event.pathParameters.quizId;
+    const quizId = event.pathParameters.quizId;
     const quiz = await getQuizById(quizId);
     if (!quiz) {
       return sendError(404, "Quiz not found");

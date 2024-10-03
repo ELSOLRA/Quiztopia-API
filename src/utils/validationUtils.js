@@ -15,7 +15,7 @@ export const quizNameSchema = vine.object({
 });
 
 export const addQuestionSchema = vine.object({
-  quizId: vine.string().required(),
+  quizId: vine.string() /* .required() */,
   question: vine.string().minLength(5).maxLength(300),
   answer: vine.string().minLength(1).maxLength(100),
   location: vine.object({
@@ -31,10 +31,27 @@ export const scoreSchema = vine.object({
 export const validate = async (schema, data) => {
   try {
     const validator = vine.compile(schema);
-    return await validator.validate(data);
+    const validatedData = await validator.validate(data);
+    return validatedData;
   } catch (error) {
-    if (error instanceof errors.E_VALIDATION_ERROR)
-      throw new Error(error.messages.join(", "));
+    if (
+      error instanceof errors.E_VALIDATION_ERROR
+      /*       error.name ===
+      "ValidationException" */
+    ) {
+      throw new Error(JSON.stringify(error.messages));
+    }
     throw error;
+    /*     if (error.name === "ValidationException") {
+      // Format validation errors
+      const formattedErrors = Object.entries(error.messages).map(
+        ([field, messages]) => ({
+          field,
+          messages: Array.isArray(messages) ? messages : [messages],
+        })
+      );
+      throw new Error(JSON.stringify(formattedErrors));
+    }
+    throw error; */
   }
 };

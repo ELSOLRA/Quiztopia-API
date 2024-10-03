@@ -62,8 +62,9 @@ export const getAllQuizzes = async () => {
 export const getQuizById = async (quizId /* , userId */) => {
   const result = await dynamoDbUtils.getItem(quizTable, { quizId });
   if (!result.Item) {
-    return null;
+    throw new Error("Quiz not found");
   }
+
   /*   if (result.Item.userId !== userId) {
     return null;
   } */
@@ -76,7 +77,7 @@ export const getQuizzesByUserId = async (userId) => {
     IndexName: "UserIdIndex",
     // The condition that specifies the key values for items to be retrieved
     // The condition must perform an equality test on a single partition key value.
-    KeyConditionExpression: "userId = :userId",
+    KeyConditionExpression: "createdBy.userId = :userId",
     ExpressionAttributeValues: {
       ":userId": userId,
     },
@@ -124,7 +125,7 @@ export const addQuestion = async (quizId, userId, questionData) => {
 
 export const deleteQuiz = async (quizId, userId) => {
   const quiz = await getQuizById(quizId);
-  if (!quiz || quiz.userId !== userId) {
+  if (!quiz || quiz.createdBy.userId !== userId) {
     throw new Error(
       "Unauthorized to delete this quiz. You can only delete your own quizzes"
     );

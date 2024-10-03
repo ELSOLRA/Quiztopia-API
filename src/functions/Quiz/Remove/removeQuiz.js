@@ -5,10 +5,12 @@ import { authMiddleware } from "../../../middleware/auth";
 
 const remove = async (event) => {
   try {
-    const { quizId } = event.pathParameters.quizId;
+    const quizId = event.pathParameters.quizId;
     const userId = event.userId;
-    await deleteQuiz(quizId, userId);
-    return sendResponse(204, { message: "Quiz deleted successfully" });
+    const deletedQuiz = await deleteQuiz(quizId, userId);
+    return sendResponse(200, {
+      message: `Quiz ${deletedQuiz.quizName} with quizId:${deletedQuiz.quizId} deleted successfully`,
+    });
   } catch (error) {
     if (error.message.includes("Unauthorized")) {
       return sendError(403, error.message);
@@ -17,4 +19,4 @@ const remove = async (event) => {
   }
 };
 
-export const handler = middy(remove).use(authMiddleware);
+export const handler = middy(remove).use(authMiddleware());
