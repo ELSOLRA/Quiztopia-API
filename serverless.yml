@@ -1,0 +1,105 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: elsolra
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: quiztopia
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-north-1
+  environment:
+    USERS_TABLE: ${self:service}-users
+    QUIZ_TABLE: ${self:service}-quizzes
+    LEADERBOARD_TABLE: ${self:service}-leaderboard
+    JWT_SECRET: quiz123
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUIZ_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.LEADERBOARD_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.QUIZ_TABLE}/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.LEADERBOARD_TABLE}/index/*
+
+package:
+  individually: true
+
+build:
+  esbuild:
+    bundle: true
+    minify: true
+
+functions:
+  createUser:
+    handler: src/functions/Users/Signup/userSignup.handler
+    events:
+      - httpApi:
+          path: /users
+          method: post
+  loginUser:
+    handler: src/functions/Users/Login/userLogin.handler
+    events:
+      - httpApi:
+          path: /login
+          method: post
+  getAllQuizzes:
+    handler: src/functions/Quiz/GetAll/getAll.handler
+    events:
+      - httpApi:
+          path: /quiz
+          method: get
+  getAllQuizzesByUser:
+    handler: src/functions/Quiz/GetAllByUser/getAllByUserId.handler
+    events:
+      - httpApi:
+          path: /quiz/user/{userId}
+          method: get
+  getQuiz:
+    handler: src/functions/Quiz/GetOneQuiz/getOneQuiz.handler
+    events:
+      - httpApi:
+          path: /quiz/{quizId}
+          method: get
+  createQuiz:
+    handler: src/functions/Quiz/CreateQuiz/createQuiz.handler
+    events:
+      - httpApi:
+          path: /quiz
+          method: post
+  addQuestion:
+    handler: src/functions/Quiz/AddQuestion/addQuestion.handler
+    events:
+      - httpApi:
+          path: /quiz/question
+          method: post
+  deleteQuiz:
+    handler: src/functions/Quiz/Remove/removeQuiz.handler
+    events:
+      - httpApi:
+          path: /quiz/{quizId}
+          method: delete
+  updateLeaderboard:
+    handler: src/functions/Leaderboard/UpdateLeaderboard/updateLeaderboard.handler
+    events:
+      - httpApi:
+          path: /leaderboard
+          method: post
+  getTopScores:
+    handler: src/functions/Leaderboard/GetTopScores/getTopScores.handler
+    events:
+      - httpApi:
+          path: /leaderboard/{quizId}
+          method: get
+
+resources:
+  - ${file(config/dynamoDb-tables.yml)}
