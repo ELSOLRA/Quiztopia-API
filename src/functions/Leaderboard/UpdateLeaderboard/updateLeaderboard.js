@@ -1,6 +1,6 @@
 import middy from "@middy/core";
 import { updateLeaderboard } from "../../../services/leaderboardService";
-import { sendError, sendResponse } from "../../../utils/apiResponses";
+import { sendError, sendSuccessResponse } from "../../../utils/apiResponses";
 import { validationMiddleware } from "../../../middleware/validation";
 import { scoreSchema } from "../../../utils/validationUtils";
 
@@ -9,8 +9,8 @@ const updateLeaderboardHandler = async (event) => {
     const { quizId, userId, score } = event.body;
 
     const result = await updateLeaderboard(quizId, userId, score);
-    return sendResponse(200, {
-      message: "Leaderboard updated successfully",
+    return sendSuccessResponse(200, {
+      // message: "Leaderboard updated successfully",
       entry: result,
     });
   } catch (error) {

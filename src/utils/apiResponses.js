@@ -1,8 +1,11 @@
-export const sendResponse = (
+export const sendResponse = (statusCode, data) => ({
   statusCode,
-  data
-) /* (statusCode, data, addSuccess=true) */ => ({
-  //   const responseBody = addSuccess ? { success: true, ...data } : data;
+  body: JSON.stringify({ ...data }),
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+export const sendSuccessResponse = (statusCode, data) => ({
   statusCode,
   body: JSON.stringify({ success: true, ...data }),
   headers: {

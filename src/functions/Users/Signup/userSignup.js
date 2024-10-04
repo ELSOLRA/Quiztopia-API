@@ -1,6 +1,10 @@
 import middy from "@middy/core";
 import { signupUser } from "../../../services/userService";
-import { sendError, sendResponse } from "../../../utils/apiResponses";
+import {
+  sendError,
+  sendResponse,
+  sendSuccessResponse,
+} from "../../../utils/apiResponses";
 import { validationMiddleware } from "../../../middleware/validation";
 import { registerSchema } from "../../../utils/validationUtils";
 
@@ -9,7 +13,7 @@ const register = async (event) => {
     const { username, password } = event.body;
     const user = await signupUser(username, password);
 
-    return sendResponse(201, { userId: user.userId });
+    return sendSuccessResponse(201, { userId: user.userId });
   } catch (error) {
     if (error.message === "Username already exists") {
       return sendError(409, "Username already exists");

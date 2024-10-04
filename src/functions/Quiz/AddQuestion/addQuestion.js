@@ -1,6 +1,6 @@
 import middy from "@middy/core";
 import { addQuestion } from "../../../services/quizService";
-import { sendError, sendResponse } from "../../../utils/apiResponses";
+import { sendError, sendSuccessResponse } from "../../../utils/apiResponses";
 import { authMiddleware } from "../../../middleware/auth";
 import { validationMiddleware } from "../../../middleware/validation";
 import { addQuestionSchema } from "../../../utils/validationUtils";
@@ -19,7 +19,7 @@ const addQuestionToQuiz = async (event) => {
 
     const questionData = { question, answer, location };
     const updatedQuiz = await addQuestion(quizId, userId, questionData);
-    return sendResponse(200, { quiz: updatedQuiz });
+    return sendSuccessResponse(200, { quiz: updatedQuiz });
   } catch (error) {
     console.error("Error adding question:", error);
     if (error.message.includes("Unauthorized")) {

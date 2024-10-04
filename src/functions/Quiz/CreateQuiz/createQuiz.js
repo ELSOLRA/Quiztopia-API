@@ -1,6 +1,6 @@
 import middy from "@middy/core";
 import { createQuiz } from "../../../services/quizService";
-import { sendError, sendResponse } from "../../../utils/apiResponses";
+import { sendError, sendSuccessResponse } from "../../../utils/apiResponses";
 import { authMiddleware } from "../../../middleware/auth";
 import { validationMiddleware } from "../../../middleware/validation";
 import { quizNameSchema } from "../../../utils/validationUtils";
@@ -13,7 +13,10 @@ const create = async (event) => {
       return sendError(401, "Unauthorized");
     }
     const quiz = await createQuiz(userId, quizName);
-    return sendResponse(201, { quizId: quiz.quizId, quizName: quiz.quizName });
+    return sendSuccessResponse(201, {
+      quizId: quiz.quizId,
+      quizName: quiz.quizName,
+    });
   } catch (error) {
     console.error("Error creating quiz:", error);
     if (error.message === "User not found") {

@@ -5,7 +5,7 @@ import { sendError, sendResponse } from "../../../utils/apiResponses";
 const getAllByUserId = async (event) => {
   try {
     const userId = event.pathParameters.userId;
-    console.log("userid in path:", userId);
+    // console.log("user id in path:", userId);
 
     if (!userId) {
       return sendError(400, "Missing required path parameter: userId");

@@ -1,6 +1,6 @@
 import middy from "@middy/core";
 import { deleteQuiz } from "../../../services/quizService";
-import { sendError, sendResponse } from "../../../utils/apiResponses";
+import { sendError, sendSuccessResponse } from "../../../utils/apiResponses";
 import { authMiddleware } from "../../../middleware/auth";
 
 const remove = async (event) => {
@@ -8,7 +8,7 @@ const remove = async (event) => {
     const quizId = event.pathParameters.quizId;
     const userId = event.userId;
     const deletedQuiz = await deleteQuiz(quizId, userId);
-    return sendResponse(200, {
+    return sendSuccessResponse(200, {
       message: `Quiz ${deletedQuiz.quizName} with quizId:${deletedQuiz.quizId} deleted successfully`,
     });
   } catch (error) {
