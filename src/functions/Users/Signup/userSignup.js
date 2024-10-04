@@ -4,7 +4,7 @@ import { sendError, sendSuccessResponse } from "../../../utils/apiResponses";
 import { validationMiddleware } from "../../../middleware/validation";
 import { registerSchema } from "../../../utils/validationUtils";
 
-const register = async (event) => {
+const signupHandler = async (event) => {
   try {
     const { username, password } = event.body;
     const user = await signupUser(username, password);
@@ -23,6 +23,6 @@ const register = async (event) => {
   }
 };
 
-export const handler = middy(register).use(
+export const handler = middy(signupHandler).use(
   validationMiddleware(registerSchema)
 );

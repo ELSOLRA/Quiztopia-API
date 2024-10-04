@@ -2,7 +2,7 @@ import middy from "@middy/core";
 import { getQuizzesByUserId } from "../../../services/quizService";
 import { sendError, sendResponse } from "../../../utils/apiResponses";
 
-const getAllByUserId = async (event) => {
+const getAllByUserIdHandler = async (event) => {
   try {
     const userId = event.pathParameters.userId;
     console.log("User ID from path:", userId);
@@ -14,7 +14,6 @@ const getAllByUserId = async (event) => {
     console.log("Quizzes retrieved:", quizzes.length);
     return sendResponse(200, { quizzes });
   } catch (error) {
-    // console.error("error getting quizzes", error.message);
     if (error.message === "User not found") {
       return sendError(404, "User not found");
     }
@@ -28,4 +27,4 @@ const getAllByUserId = async (event) => {
   }
 };
 
-export const handler = middy(getAllByUserId);
+export const handler = middy(getAllByUserIdHandler);

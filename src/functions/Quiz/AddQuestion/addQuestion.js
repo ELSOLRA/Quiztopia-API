@@ -5,7 +5,7 @@ import { authMiddleware } from "../../../middleware/auth";
 import { validationMiddleware } from "../../../middleware/validation";
 import { addQuestionSchema } from "../../../utils/validationUtils";
 
-const addQuestionToQuiz = async (event) => {
+const addQuestionHandler = async (event) => {
   try {
     const { quizId, question, answer, location } = event.body;
     const userId = event.userId;
@@ -40,6 +40,6 @@ const addQuestionToQuiz = async (event) => {
   }
 };
 
-export const handler = middy(addQuestionToQuiz)
+export const handler = middy(addQuestionHandler)
   .use(authMiddleware())
   .use(validationMiddleware(addQuestionSchema));

@@ -4,13 +4,13 @@ import { sendError, sendSuccessResponse } from "../../../utils/apiResponses";
 import { validationMiddleware } from "../../../middleware/validation";
 import { loginSchema } from "../../../utils/validationUtils";
 
-const login = async (event) => {
+const loginHandler = async (event) => {
   try {
     const { username, password } = event.body;
     const data = await loginUser(username, password);
     return sendSuccessResponse(200, {
       token: data.token,
-      // userId: data.user.userId,
+      userId: data.user.userId,
     });
   } catch (error) {
     if (
@@ -23,4 +23,6 @@ const login = async (event) => {
   }
 };
 
-export const handler = middy(login).use(validationMiddleware(loginSchema));
+export const handler = middy(loginHandler).use(
+  validationMiddleware(loginSchema)
+);

@@ -5,7 +5,7 @@ import { authMiddleware } from "../../../middleware/auth";
 import { validationMiddleware } from "../../../middleware/validation";
 import { quizNameSchema } from "../../../utils/validationUtils";
 
-const create = async (event) => {
+const createHandler = async (event) => {
   try {
     const { quizName } = event.body;
     const userId = event.userId;
@@ -29,6 +29,6 @@ const create = async (event) => {
   }
 };
 
-export const handler = middy(create)
+export const handler = middy(createHandler)
   .use(authMiddleware())
   .use(validationMiddleware(quizNameSchema));

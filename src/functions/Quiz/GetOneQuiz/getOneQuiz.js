@@ -2,7 +2,7 @@ import middy from "@middy/core";
 import { getQuizById } from "../../../services/quizService";
 import { sendError, sendResponse } from "../../../utils/apiResponses";
 
-const getQuiz = async (event) => {
+const getQuizHandler = async (event) => {
   try {
     const quizId = event.pathParameters.quizId;
     if (!quizId) {
@@ -22,4 +22,4 @@ const getQuiz = async (event) => {
   }
 };
 
-export const handler = middy(getQuiz);
+export const handler = middy(getQuizHandler);
