@@ -5,6 +5,7 @@ export const sendResponse = (statusCode, data) => ({
     "Content-Type": "application/json",
   },
 });
+
 export const sendSuccessResponse = (statusCode, data) => ({
   statusCode,
   body: JSON.stringify({ success: true, ...data }),

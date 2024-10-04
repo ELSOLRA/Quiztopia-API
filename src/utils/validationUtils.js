@@ -26,7 +26,6 @@ export const addQuestionSchema = vine.object({
 
 export const scoreSchema = vine.object({
   quizId: vine.string(),
-  userId: vine.string(),
   score: vine.number().min(0),
 });
 
@@ -40,16 +39,5 @@ export const validate = async (schema, data) => {
       throw new Error(JSON.stringify(error.messages));
     }
     throw error;
-    /*     if (error.name === "ValidationException") {
-      // Format validation errors
-      const formattedErrors = Object.entries(error.messages).map(
-        ([field, messages]) => ({
-          field,
-          messages: Array.isArray(messages) ? messages : [messages],
-        })
-      );
-      throw new Error(JSON.stringify(formattedErrors));
-    }
-    throw error; */
   }
 };

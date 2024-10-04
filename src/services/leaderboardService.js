@@ -53,7 +53,7 @@ export const updateLeaderboard = async (quizId, userId, score) => {
   try {
     /*       await dynamoDbUtils.putItemWithParams(params);
     return entryToLeaderboard; */
-    const result = await dynamoDbUtils.updateItemWithParams(params);
+    const result = await dynamoDbUtils.updateItem(params);
     return result.Attributes;
   } catch (error) {
     //  if a condition specified in the operation could not be evaluated.
@@ -76,6 +76,7 @@ export const getTopScores = async (quizId, limit) => {
     ExpressionAttributeValues: {
       ":quizId": quizId,
     },
+    ProjectionExpression: "userId, username, score",
     //   reads the results in reverse order by sort key value
     ScanIndexForward: false,
     //   result can be limited (number)
@@ -83,6 +84,7 @@ export const getTopScores = async (quizId, limit) => {
   };
   try {
     const result = await dynamoDbUtils.query(params);
+
     return result.Items;
   } catch (error) {
     throw new Error("Database error: failed to retrieve top scores");

@@ -1,5 +1,5 @@
 import middy from "@middy/core";
-import { deleteQuiz, getQuizById } from "../../../services/quizService";
+import { deleteQuiz } from "../../../services/quizService";
 import { sendError, sendSuccessResponse } from "../../../utils/apiResponses";
 import { authMiddleware } from "../../../middleware/auth";
 

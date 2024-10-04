@@ -16,11 +16,6 @@ export const putItem = async (tableName, item) => {
   return dynamoDb.send(command);
 };
 
-export const putItemWithParams = async (params) => {
-  const command = new PutCommand(params);
-  return dynamoDb.send(command);
-};
-
 export const getItem = async (tableName, key) => {
   const command = new GetCommand({
     TableName: tableName,
@@ -39,23 +34,7 @@ export const scan = async (params) => {
   return dynamoDb.send(command);
 };
 
-export const updateItem = async (
-  tableName,
-  key,
-  updateExpression,
-  attributeValues
-) => {
-  const command = new UpdateCommand({
-    TableName: tableName,
-    Key: key,
-    UpdateExpression: updateExpression,
-    ExpressionAttributeValues: attributeValues,
-    ReturnValues: "UPDATED_NEW",
-  });
-  return dynamoDb.send(command);
-};
-
-export const updateItemWithParams = async (params) => {
+export const updateItem = async (params) => {
   const command = new UpdateCommand(params);
   return dynamoDb.send(command);
 };

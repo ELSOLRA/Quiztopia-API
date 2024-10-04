@@ -13,11 +13,6 @@ export const validationMiddleware = (schema) => ({
 
       handler.event.body = validatedBody;
     } catch (error) {
-      /*       console.error("Validation error:", error.message);
-      return sendError(
-        400,
-        "The username and password fields must have at least 3 characters each"
-      ); */
       try {
         const errorMessages = JSON.parse(error.message);
         const formattedError = errorMessages

@@ -13,12 +13,9 @@ export const createQuiz = async (userId, quizName) => {
 
   const quiz = {
     quizId,
-    // userId,
     quizName,
-    createdBy: {
-      userId,
-      username: user.username,
-    },
+    userId,
+    username: user.username,
     questions: [],
     createdAt: new Date().toISOString(),
   };
@@ -27,7 +24,6 @@ export const createQuiz = async (userId, quizName) => {
     await dynamoDbUtils.putItem(quizTable, quiz);
     return quiz;
   } catch (error) {
-    // console.error("Error creating quiz:", error);
     throw new Error("Database error: failed to create quiz");
   }
 };
@@ -36,25 +32,6 @@ export const getAllQuizzes = async () => {
   const params = { TableName: quizTable };
   const result = await dynamoDbUtils.scan(params);
 
-  /*   const quizzesWithUserName = await Promise.all(
-    result.Items.map(async (quiz) => {
-      try {
-        const user = await getUserById(quiz.userId);
-        return {
-          ...quiz,
-          createdBy: user ? user.username : "-",
-        };
-      } catch (error) {
-        console.error(`Error fetching quiz -${quiz.quizId}:`, error);
-        return {
-          ...quiz,
-          createdBy: "-",
-        };
-      }
-    })
-  );
-
-  return quizzesWithUserName; */
   return result.Items;
 };
 
@@ -73,28 +50,28 @@ export const getQuizById = async (quizId /* , userId */) => {
   }
 };
 
-/*   if (result.Item.userId !== userId) {
-    return null;
-  } */
-
 export const getQuizzesByUserId = async (userId) => {
+  const userIdIndex = "UserIdIndex";
+  console.log("Quiz Table:", quizTable);
+  console.log("UserID Index:", userIdIndex);
   const user = await getUserById(userId);
   if (!user) {
     throw new Error("User not found");
   }
+  const params = {
+    TableName: quizTable,
+    IndexName: "UserIdIndex",
+    // The condition that specifies the key values for items to be retrieved
+    // The condition must perform an equality test on a single partition key value.
+    KeyConditionExpression: "userId = :userId",
+    ExpressionAttributeValues: {
+      ":userId": userId,
+    },
+  };
+  console.log("Query Params:", JSON.stringify(params, null, 2));
   try {
-    const params = {
-      TableName: quizTable,
-      IndexName: "UserIdIndex",
-      // The condition that specifies the key values for items to be retrieved
-      // The condition must perform an equality test on a single partition key value.
-      KeyConditionExpression: "createdBy.userId = :userId",
-      ExpressionAttributeValues: {
-        ":userId": userId,
-      },
-    };
-
     const result = await dynamoDbUtils.query(params);
+    console.log("Query Result:", JSON.stringify(result, null, 2));
     return result.Items;
   } catch (error) {
     throw new Error("Database error: failed to retrieve quizzes from database");
@@ -106,7 +83,7 @@ export const addQuestion = async (quizId, userId, questionData) => {
   if (!quiz) {
     throw new Error("Quiz not found or invalid quizId");
   }
-  if (quiz.createdBy.userId !== userId) {
+  if (quiz.userId !== userId) {
     throw new Error(
       "Unauthorized to modify this quiz, you can only modify your own quiz"
     );
@@ -115,7 +92,6 @@ export const addQuestion = async (quizId, userId, questionData) => {
   const newQuestion = {
     id: uuid(),
     ...questionData,
-    // createdAt: new Date().toISOString(),
   };
 
   const params = {
@@ -132,21 +108,9 @@ export const addQuestion = async (quizId, userId, questionData) => {
     },
     ReturnValues: "ALL_NEW",
   };
-  /*   const updateExpression =
-    "SET questions = list_append(if_not_exists(questions, :empty_list), :question)";
-  const attributeValues = {
-    ":question": [newQuestion],
-    ":empty_list": [],
-  }; */
 
   try {
-    const result = await dynamoDbUtils.updateItemWithParams(
-      params
-      /*     quizTable,
-      { quizId },
-      updateExpression,
-      attributeValues */
-    );
+    const result = await dynamoDbUtils.updateItem(params);
 
     return result.Attributes;
   } catch (error) {
@@ -159,7 +123,7 @@ export const deleteQuiz = async (quizId, userId) => {
   if (!quiz) {
     throw new Error("Quiz not found or invalid quizId");
   }
-  if (quiz.createdBy.userId !== userId) {
+  if (quiz.userId !== userId) {
     throw new Error(
       "Unauthorized to delete this quiz. You can only delete your own quizzes"
     );

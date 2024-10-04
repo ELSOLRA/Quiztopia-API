@@ -6,15 +6,11 @@ export const authMiddleware = () => ({
     const authHeader =
       handler.event.headers.Authorization ||
       handler.event.headers.authorization;
-    /*     console.log("event object--------", handler.event);
-
-    console.log("authHeader-----------", authHeader); */
-
     try {
       if (!authHeader) {
         throw new Error(error.message);
       }
-      const token = authHeader.replace("Bearer ", "").trim(); // eller split(' ')[1];
+      const token = authHeader.replace("Bearer ", "").trim();
 
       const decodedData = verifyToken(token);
 

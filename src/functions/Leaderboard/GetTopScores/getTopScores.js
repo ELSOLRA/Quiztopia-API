@@ -1,6 +1,6 @@
 import middy from "@middy/core";
 import { getTopScores } from "../../../services/leaderboardService";
-import { sendResponse } from "../../../utils/apiResponses";
+import { sendError, sendResponse } from "../../../utils/apiResponses";
 
 const getTopScoresHandler = async (event) => {
   try {
