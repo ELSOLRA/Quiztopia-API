@@ -7,7 +7,7 @@ const getAll = async () => {
     const quizzes = await getAllQuizzes();
     return sendResponse(200, { quizzes });
   } catch (error) {
-    console.error("error getting quizzes", error);
+    // console.error("error getting quizzes", error);
     return sendError(500, "Could not retrieve quizzes");
   }
 };

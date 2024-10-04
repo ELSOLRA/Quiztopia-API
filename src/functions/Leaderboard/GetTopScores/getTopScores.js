@@ -13,7 +13,10 @@ const getTopScoresHandler = async (event) => {
     return sendResponse(200, { topScores: topScoresList });
   } catch (error) {
     if (error.message === "Quiz not found") {
-      return sendError(404, error.message);
+      return sendError(404, "Quiz not found");
+    }
+    if (error.message.includes("Database error")) {
+      return sendError(500, "Database error: failed to retrieve top scores");
     }
     return sendError(500, "Internal server error");
   }

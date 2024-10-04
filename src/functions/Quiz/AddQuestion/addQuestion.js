@@ -18,14 +18,25 @@ const addQuestionToQuiz = async (event) => {
     }
 
     const questionData = { question, answer, location };
-    const updatedQuiz = await addQuestion(quizId, userId, questionData);
+    const { createdAt, ...updatedQuiz } = await addQuestion(
+      quizId,
+      userId,
+      questionData
+    );
+
     return sendSuccessResponse(200, { quiz: updatedQuiz });
   } catch (error) {
-    console.error("Error adding question:", error);
-    if (error.message.includes("Unauthorized")) {
-      return sendError(403, error.message);
+    // console.error("Error adding question:", error);
+    if (error.message.includes("Quiz not found")) {
+      return sendError(404, "Quiz not found or invalid quizId");
     }
-    return sendError(500, "Could not add question");
+    if (error.message.includes("Unauthorized")) {
+      return sendError(403, "Unauthorized to modify this quiz");
+    }
+    if (error.message.includes("Failed to add")) {
+      return sendError(500, "Database error: could not add question to quiz");
+    }
+    return sendError(500, "Internal server error");
   }
 };
 

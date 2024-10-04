@@ -1,10 +1,6 @@
 import middy from "@middy/core";
 import { signupUser } from "../../../services/userService";
-import {
-  sendError,
-  sendResponse,
-  sendSuccessResponse,
-} from "../../../utils/apiResponses";
+import { sendError, sendSuccessResponse } from "../../../utils/apiResponses";
 import { validationMiddleware } from "../../../middleware/validation";
 import { registerSchema } from "../../../utils/validationUtils";
 
@@ -13,15 +9,17 @@ const register = async (event) => {
     const { username, password } = event.body;
     const user = await signupUser(username, password);
 
-    return sendSuccessResponse(201, { userId: user.userId });
+    return sendSuccessResponse(201, {
+      message: `User ${user.username} created successfully`,
+    });
   } catch (error) {
     if (error.message === "Username already exists") {
       return sendError(409, "Username already exists");
     }
-    /*     if (error instanceof SyntaxError) {
-      return sendError(400, "Invalid JSON in request body");
-    } */
-    return sendError(500, error.message);
+    if (error.message.includes("Database error")) {
+      return sendError(500, "Failed to create user due to a database error");
+    }
+    return sendError(500, "Internal server error");
   }
 };
 

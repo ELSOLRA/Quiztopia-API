@@ -1,10 +1,6 @@
 import middy from "@middy/core";
 import { loginUser } from "../../../services/userService";
-import {
-  sendError,
-  sendResponse,
-  sendSuccessResponse,
-} from "../../../utils/apiResponses";
+import { sendError, sendSuccessResponse } from "../../../utils/apiResponses";
 import { validationMiddleware } from "../../../middleware/validation";
 import { loginSchema } from "../../../utils/validationUtils";
 
@@ -14,10 +10,16 @@ const login = async (event) => {
     const data = await loginUser(username, password);
     return sendSuccessResponse(200, {
       token: data.token,
-      userId: data.user.userId,
+      // userId: data.user.userId,
     });
   } catch (error) {
-    return sendError(401, error.message);
+    if (
+      error.message === "User not found" ||
+      error.message === "Invalid password"
+    ) {
+      return sendError(401, "Invalid credentials");
+    }
+    return sendError(500, "Login failed");
   }
 };
 

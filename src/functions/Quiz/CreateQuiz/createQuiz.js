@@ -22,7 +22,10 @@ const create = async (event) => {
     if (error.message === "User not found") {
       return sendError(404, "User not found");
     }
-    return sendError(500, `Couldn't create ${quizName} quiz `);
+    if (error.message.includes("Database error")) {
+      return sendError(500, "Database error: failed to create quiz");
+    }
+    return sendError(500, "Internal server error");
   }
 };
 

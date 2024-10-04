@@ -6,26 +6,30 @@ import { generateToken } from "../utils/jwt";
 const usersTable = process.env.USERS_TABLE;
 
 export const getUserByUsername = async (username) => {
-  const params = {
-    TableName: usersTable,
-    IndexName: "UsernameIndex",
-    KeyConditionExpression: "username = :username",
-    ExpressionAttributeValues: {
-      ":username": username,
-    },
-  };
+  try {
+    const params = {
+      TableName: usersTable,
+      IndexName: "UsernameIndex",
+      KeyConditionExpression: "username = :username",
+      ExpressionAttributeValues: {
+        ":username": username,
+      },
+    };
 
-  const result = await dynamoDbUtils.query(params);
-  return result.Items[0];
+    const result = await dynamoDbUtils.query(params);
+    return result.Items[0] || null;
+  } catch (error) {
+    throw new Error("error fetching user by username");
+  }
 };
 
 export const getUserById = async (userId) => {
-  const user = await dynamoDbUtils.getItem(usersTable, { userId });
-  if (!user.Item) {
-    return null;
+  try {
+    const user = await dynamoDbUtils.getItem(usersTable, { userId });
+    return user.Item || null;
+  } catch (error) {
+    throw new Error("Database error: error fetching user by id");
   }
-
-  return user.Item;
 };
 
 export const signupUser = async (username, password) => {
@@ -42,9 +46,12 @@ export const signupUser = async (username, password) => {
     username,
     password: hashedPassword,
   };
-
-  await dynamoDbUtils.putItem(usersTable, user);
-  return user;
+  try {
+    await dynamoDbUtils.putItem(usersTable, user);
+    return user;
+  } catch (error) {
+    throw new Error("Database error: failed to create user");
+  }
 };
 
 export const loginUser = async (username, password) => {

@@ -50,7 +50,7 @@ export const updateItem = async (
     Key: key,
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: attributeValues,
-    ReturnValues: "ALL_NEW",
+    ReturnValues: "UPDATED_NEW",
   });
   return dynamoDb.send(command);
 };

@@ -18,10 +18,13 @@ const updateLeaderboardHandler = async (event) => {
       error.message === "Quiz not found" ||
       error.message === "User not found"
     ) {
-      return sendError(404, error.message);
+      return sendError(404, "Quiz or User not found");
     }
-    if (error.message === "current leaderboard entry has a higher score") {
-      return sendError(409, error.message);
+    if (error.message.includes("current leaderboard entry")) {
+      return sendError(409, "current leaderboard entry has a higher score");
+    }
+    if (error.message.includes("Database error")) {
+      return sendError(500, "Database error: failed to update leaderboard");
     }
     return sendError(500, "Internal server error");
   }

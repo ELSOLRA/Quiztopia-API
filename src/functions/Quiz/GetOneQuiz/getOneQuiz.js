@@ -5,14 +5,20 @@ import { sendError, sendResponse } from "../../../utils/apiResponses";
 const getQuiz = async (event) => {
   try {
     const quizId = event.pathParameters.quizId;
-    const quiz = await getQuizById(quizId);
-    if (!quiz) {
-      return sendError(404, "Quiz not found");
+    if (!quizId) {
+      return sendError(400, "Missing quizId ");
     }
+    const quiz = await getQuizById(quizId);
     return sendResponse(200, quiz);
   } catch (error) {
     console.error(`Error getting ${quizId} quiz:`, error);
-    return sendError(500, "Could not retrieve quiz");
+    if (error.message === "Quiz not found") {
+      return sendError(404, "Quiz not found");
+    }
+    if (error.message.includes("Failed to retrieve")) {
+      return sendError(500, "Database error: Could not retrieve quiz");
+    }
+    return sendError(500, "Internal server error");
   }
 };
 

@@ -60,7 +60,7 @@ export const updateLeaderboard = async (quizId, userId, score) => {
     if (error instanceof ConditionalCheckFailedException) {
       throw new Error("current leaderboard entry has a higher score");
     }
-    throw new Error("Failed to update leaderboard");
+    throw new Error("Database error: failed to update leaderboard");
   }
 };
 
@@ -85,6 +85,6 @@ export const getTopScores = async (quizId, limit) => {
     const result = await dynamoDbUtils.query(params);
     return result.Items;
   } catch (error) {
-    throw new Error("Failed to retrieve top scores");
+    throw new Error("Database error: failed to retrieve top scores");
   }
 };

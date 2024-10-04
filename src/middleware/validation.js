@@ -10,7 +10,6 @@ export const validationMiddleware = (schema) => ({
           : handler.event.body;
 
       const validatedBody = await validate(schema, body);
-      console.log("Validated body:-----", validatedBody);
 
       handler.event.body = validatedBody;
     } catch (error) {
