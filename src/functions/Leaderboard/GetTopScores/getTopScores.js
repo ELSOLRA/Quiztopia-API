@@ -5,6 +5,7 @@ import { sendError, sendResponse } from "../../../utils/apiResponses";
 const getTopScoresHandler = async (event) => {
   try {
     const quizId = event.pathParameters.quizId;
+    // sets limit from query parameters, default to 10
     const limit = event.queryStringParameters?.limit
       ? parseInt(event.queryStringParameters.limit)
       : 10;

@@ -11,7 +11,6 @@ const getQuizHandler = async (event) => {
     const quiz = await getQuizById(quizId);
     return sendResponse(200, quiz);
   } catch (error) {
-    console.error(`Error getting ${quizId} quiz:`, error);
     if (error.message === "Quiz not found") {
       return sendError(404, "Quiz not found");
     }

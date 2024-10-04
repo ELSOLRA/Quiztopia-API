@@ -26,7 +26,6 @@ const addQuestionHandler = async (event) => {
 
     return sendSuccessResponse(200, { quiz: updatedQuiz });
   } catch (error) {
-    // console.error("Error adding question:", error);
     if (error.message.includes("Quiz not found")) {
       return sendError(404, "Quiz not found or invalid quizId");
     }

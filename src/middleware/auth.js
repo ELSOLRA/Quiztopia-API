@@ -13,7 +13,7 @@ export const authMiddleware = () => ({
       const token = authHeader.replace("Bearer ", "").trim();
 
       const decodedData = verifyToken(token);
-
+      // userId from the decoded token to the event object
       handler.event.userId = decodedData.userId;
     } catch (error) {
       return sendError(401, "Invalid token");

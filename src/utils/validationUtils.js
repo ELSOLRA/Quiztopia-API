@@ -1,5 +1,7 @@
 import vine, { errors } from "@vinejs/vine";
 
+// Defining different schemas for validation
+
 export const registerSchema = vine.object({
   username: vine.string().alphaNumeric().minLength(3).maxLength(30),
   password: vine.string().minLength(3).maxLength(30),
@@ -29,6 +31,7 @@ export const scoreSchema = vine.object({
   score: vine.number().min(0),
 });
 
+//validation function for all schemas
 export const validate = async (schema, data) => {
   try {
     const validator = vine.compile(schema);

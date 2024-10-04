@@ -11,6 +11,7 @@ export const createQuiz = async (userId, quizName) => {
   }
   const quizId = uuid();
 
+  // quiz object with unique ID
   const quiz = {
     quizId,
     quizName,
@@ -35,7 +36,7 @@ export const getAllQuizzes = async () => {
   return result.Items;
 };
 
-export const getQuizById = async (quizId /* , userId */) => {
+export const getQuizById = async (quizId) => {
   try {
     const result = await dynamoDbUtils.getItem(quizTable, { quizId });
     if (!result.Item) {
@@ -51,9 +52,6 @@ export const getQuizById = async (quizId /* , userId */) => {
 };
 
 export const getQuizzesByUserId = async (userId) => {
-  const userIdIndex = "UserIdIndex";
-  console.log("Quiz Table:", quizTable);
-  console.log("UserID Index:", userIdIndex);
   const user = await getUserById(userId);
   if (!user) {
     throw new Error("User not found");
@@ -68,10 +66,10 @@ export const getQuizzesByUserId = async (userId) => {
       ":userId": userId,
     },
   };
-  console.log("Query Params:", JSON.stringify(params, null, 2));
+
   try {
+    // query for quizzes matching the userId
     const result = await dynamoDbUtils.query(params);
-    console.log("Query Result:", JSON.stringify(result, null, 2));
     return result.Items;
   } catch (error) {
     throw new Error("Database error: failed to retrieve quizzes from database");

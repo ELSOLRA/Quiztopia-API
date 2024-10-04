@@ -18,7 +18,6 @@ const createHandler = async (event) => {
       quizName: quiz.quizName,
     });
   } catch (error) {
-    console.error("Error creating quiz:", error);
     if (error.message === "User not found") {
       return sendError(404, "User not found");
     }

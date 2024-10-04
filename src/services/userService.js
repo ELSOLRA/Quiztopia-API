@@ -7,6 +7,7 @@ const usersTable = process.env.USERS_TABLE;
 
 export const getUserByUsername = async (username) => {
   try {
+    // queries users table using username index
     const params = {
       TableName: usersTable,
       IndexName: "UsernameIndex",
@@ -59,7 +60,7 @@ export const loginUser = async (username, password) => {
   if (!user) {
     throw new Error("User not found");
   }
-
+  // verifies password and generates token
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
     throw new Error("Invalid password");

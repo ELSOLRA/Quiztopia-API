@@ -15,32 +15,14 @@ export const updateLeaderboard = async (quizId, userId, score) => {
   if (!user) {
     throw new Error("User not found");
   }
-  /*   const entryToLeaderboard = {
-    quizId,
-    player: {
-      userId,
-      username: user.username,
-    },
-    score,
-  };
 
-  const params = {
-    TableName: leaderboard,
-    Item: entryToLeaderboard,
-    //  a condition that must be satisfied in order for a conditional PutItem operation to succeed.
-    ConditionExpression:
-      "attribute_not_exists(quizId) OR attribute_not_exists(score) OR :newScore > score",
-    ExpressionAttributeValues: {
-      ":newScore": score,
-    },
-  };
- */
   const params = {
     TableName: leaderboard,
     Key: {
       quizId,
       userId,
     },
+    // updates score only if it doesn't exist or new score is higher
     UpdateExpression: "SET score = :score, username= :username",
     ConditionExpression: "attribute_not_exists(score) OR :score > score",
     ExpressionAttributeValues: {
@@ -51,8 +33,6 @@ export const updateLeaderboard = async (quizId, userId, score) => {
   };
 
   try {
-    /*       await dynamoDbUtils.putItemWithParams(params);
-    return entryToLeaderboard; */
     const result = await dynamoDbUtils.updateItem(params);
     return result.Attributes;
   } catch (error) {
